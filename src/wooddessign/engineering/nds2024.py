@@ -35,11 +35,15 @@ def stability_ratio(critical: float, adjusted: float, coefficient: float) -> flo
     c = number(coefficient, "coefficient")
     if c > 1:
         raise ValueError("Stability coefficient must not exceed one")
-    a = (1 + ratio) / (2 * c)
-    discriminant = a * a - ratio / c
-    if discriminant < 0:
-        raise ValueError("Invalid stability discriminant")
-    return (ratio / c) / (a + math.sqrt(discriminant))
+    if not math.isfinite(ratio) or ratio <= 0:
+        raise ValueError("Stability ratio is outside the representable range")
+    # Solve c*x^2 - (1+r)*x + r = 0 for the smaller root.
+    # Scaling by r above one prevents overflow without clamping the result.
+    if ratio >= 1:
+        inverse = 1 / ratio
+        return 2 / (1 + inverse + math.sqrt((1 + inverse)**2 - 4*c*inverse))
+    return 2*ratio / (1 + ratio + math.sqrt((1 + ratio)**2 - 4*c*ratio))
+
 
 
 def beam_stability(b: float, d: float, effective_length: float,
@@ -48,6 +52,8 @@ def beam_stability(b: float, d: float, effective_length: float,
     le = number(effective_length, "beam effective length")
     number(fb_star, "Fb*"), number(emin_adjusted, "Emin adjusted")
     rb = math.sqrt(le * d / b**2)
+    if not math.isfinite(rb):
+        raise ValueError("Beam slenderness is outside the representable range")
     if rb > 50:
         return {"status": "invalid", "RB": rb, "CL": None,
                 "reason": "BEAM_SLENDERNESS_EXCEEDS_50", "formula_id": "NDS-F-060"}
@@ -217,6 +223,8 @@ class MemberRequest(Model):
 
     @model_validator(mode="after")
     def geometry(self):
+        if self.depth_in < self.width_in:
+            raise ValueError("This scope requires depth >= width; flatwise members are not supported")
         if self.net_tension_area_in2 > self.width_in * self.depth_in:
             raise ValueError("Net tension area exceeds gross area")
         if self.bearing_net_area_in2 > self.width_in * self.bearing_length_in:
@@ -233,6 +241,8 @@ def check_member(request: MemberRequest) -> dict:
     r = request
     b, d = r.width_in, r.depth_in
     area, sx, sy, ix = b * d, b * d*d/6, d*b*b/6, b*d**3/12
+    if any(not math.isfinite(x) or x <= 0 for x in (area, sx, sy, ix)):
+        raise ValueError("Section properties are outside the representable range")
     properties = {}
     for key, value in r.material:
         if isinstance(value, Property):
@@ -244,7 +254,11 @@ def check_member(request: MemberRequest) -> dict:
             column_axis(b, r.column_effective_length_y_in, adjusted["Fc"], adjusted["Emin"])]
     checks = []
     def add(check_id, formula, demand, capacity, case_id):
+        if not math.isfinite(demand) or not math.isfinite(capacity) or capacity <= 0:
+            raise ValueError("Nonfinite demand or invalid capacity")
         utilization = demand / capacity
+        if not math.isfinite(utilization):
+            raise ValueError("Utilization is outside the representable range")
         checks.append({"check_id": check_id, "formula_id": formula, "case_id": case_id,
                        "demand": demand, "capacity": capacity, "utilization": utilization,
                        "unit": "in" if check_id.startswith("deflection_") else "1" if check_id.startswith("tension_bending") else "psi",
@@ -317,4 +331,5 @@ def check_member(request: MemberRequest) -> dict:
             "deflections": deflections,
             "limitations": ["BETA_COMPONENT_CHECKS_NOT_PROFESSIONAL_APPROVAL", "ENGINEER_SUPPLIED_MATERIAL_AND_ADJUSTMENT_FACTORS",
                             "CONNECTIONS_FIRE_DURABILITY_AND_NOTCHES_NOT_CHECKED", "SINGLE_PRISMATIC_SAWN_MEMBER_ONLY",
-                            "BUILT_UP_GLULAM_SCL_CSA_O86_NOT_IMPLEMENTED", "MINOR_AXIS_RESTRAINT_REQUIRES_SEPARATE_VERIFICATION"]}
+                            "BUILT_UP_GLULAM_SCL_CSA_O86_NOT_IMPLEMENTED", "MINOR_AXIS_RESTRAINT_REQUIRES_SEPARATE_VERIFICATION",
+                            "DEFLECTION_IS_BENDING_ONLY_NO_SHEAR_OR_CREEP"]}

@@ -118,7 +118,7 @@ def test_slenderness_limits_are_invalid_without_extrapolation():
 
 @pytest.mark.parametrize("change", [
     {"width_in":True}, {"width_in":float("nan")}, {"standard":"CSA_O86_2024"},
-    {"net_tension_area_in2":1000.}, {"serviceability":None}, {"unnotched_prismatic":False},
+    {"width_in":20., "depth_in":2.}, {"net_tension_area_in2":1000.}, {"serviceability":None}, {"unnotched_prismatic":False},
 ])
 def test_request_rejects_unsupported_or_missing_inputs(change):
     data = fixture(); data.update(change)
@@ -136,3 +136,9 @@ def test_duplicate_cases_and_simultaneous_axial_signs_are_rejected():
     with pytest.raises(ValidationError): MemberRequest.model_validate(data)
     data=fixture();data["actions"][0]["tension_lbf"]=1.
     with pytest.raises(ValidationError): MemberRequest.model_validate(data)
+
+
+def test_stiff_stability_limit_does_not_lose_precision_or_overflow():
+    from wooddessign.engineering.nds2024 import stability_ratio
+    assert stability_ratio(1e200, 1000., .95) == pytest.approx(1.)
+    assert stability_ratio(1e-100, 1000., .8) > 0
