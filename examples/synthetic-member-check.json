@@ -1,0 +1,84 @@
+{
+  "standard": "NDS_2024",
+  "method": "ASD",
+  "unit_system": "in_lbf_psi",
+  "member_type": "beam",
+  "width_in": 3.5,
+  "depth_in": 11.25,
+  "net_tension_area_in2": 39.375,
+  "beam_effective_length_in": 144.0,
+  "column_effective_length_x_in": 96.0,
+  "column_effective_length_y_in": 96.0,
+  "bearing_length_in": 3.0,
+  "bearing_net_area_in2": 10.5,
+  "bearing_distance_from_end_in": 0.0,
+  "bearing_is_interior": false,
+  "duration": "normal",
+  "material": {
+    "designation": "test",
+    "category": "sawn_lumber",
+    "Fb_x": {
+      "reference_psi": 1200.0,
+      "adjustments": {},
+      "source": "Independent test material, not a lumber catalog"
+    },
+    "Fb_y": {
+      "reference_psi": 1200.0,
+      "adjustments": {},
+      "source": "Independent test material, not a lumber catalog"
+    },
+    "Fv": {
+      "reference_psi": 150.0,
+      "adjustments": {},
+      "source": "Independent test material, not a lumber catalog"
+    },
+    "Fc": {
+      "reference_psi": 1000.0,
+      "adjustments": {},
+      "source": "Independent test material, not a lumber catalog"
+    },
+    "Ft": {
+      "reference_psi": 700.0,
+      "adjustments": {},
+      "source": "Independent test material, not a lumber catalog"
+    },
+    "Fc_perp": {
+      "reference_psi": 500.0,
+      "adjustments": {},
+      "source": "Independent test material, not a lumber catalog"
+    },
+    "E": {
+      "reference_psi": 1200000.0,
+      "adjustments": {},
+      "source": "Independent test material, not a lumber catalog"
+    },
+    "Emin": {
+      "reference_psi": 400000.0,
+      "adjustments": {},
+      "source": "Independent test material, not a lumber catalog"
+    }
+  },
+  "actions": [
+    {
+      "case_id": "C1",
+      "compression_lbf": 2000.0,
+      "tension_lbf": 0.0,
+      "moment_x_lbf_in": 10000.0,
+      "moment_y_lbf_in": 0.0,
+      "shear_lbf": 1000.0,
+      "bearing_reaction_lbf": 1000.0
+    }
+  ],
+  "serviceability": {
+    "support_and_loading": "simply_supported_udl",
+    "span_in": 144.0,
+    "total_udl_lbf_per_in": 10.0,
+    "live_udl_lbf_per_in": 6.0,
+    "total_limit_divisor": 240.0,
+    "live_limit_divisor": 360.0
+  },
+  "unnotched_prismatic": true,
+  "connections_checked_separately": true,
+  "no_composite_action_assumed": true,
+  "minor_axis_restraint_verified": true
+}

@@ -1,63 +1,34 @@
-# WoodDessign
+# WoodDessign — NDS 2024 component-check Beta
 
-Production-oriented structural wood design calculator scaffold.
+Installable Python package and protected FastAPI service for a limited evaluation workflow. The website page is `/tools/wood-design` on Linkoteq.
 
-## Status
+## Current scope
 
-This repository is currently in **engineering hold** for calculation modules.
+Single rectangular, prismatic, unnotched sawn-lumber components. Includes engineer-supplied material/factor inputs with provenance, controlled ASD/LRFD duration/format chains, bending/shear/tension/bearing, beam stability from adjusted values, both column axes, compression–bending interaction without denominator clamping, and simply supported UDL live/total deflection.
 
-The application architecture, provenance records, API shell, and validation scaffolding are initialized. Engineering design calculations are intentionally not implemented until the governing engineering specification and validated Agent #2 calculation package are supplied and approved.
+The website's simple-beam workflow analyzes one full-span downward UDL. Design combination load and service loads are supplied separately; self-weight must already be included. It does not generate building-code load combinations.
 
-### Current hold points
-
-- HP-01: Governing code editions and engineering calculation specification are not available in the supplied project materials.
-- HP-02: No authoritative structural-engineering project named `PyNDS` has been verified. Public GitHub search results for `PyNDS` currently resolve to Nintendo DS emulator projects, not an NDS wood-design engine.
-- HP-05: No code-design module may be represented as validated until independent benchmark cases are available.
-- HP-06: No manufacturer/product dataset is included because authorized provenance has not been supplied.
-
-## Architecture
-
-```text
-src/wooddessign/
-  api/          FastAPI transport layer
-  models/       Typed application contracts
-  codes/        Design-standard adapters (blocked pending validated engine)
-  reporting/    Report contracts (no engineering reinterpretation)
-docs/
-  source_register.md
-  implementation_matrix.md
-  pynds_audit.md
-tests/
-  api/
-```
-
-Engineering calculations must remain in the validated Python engine/package. FastAPI and future web/mobile clients must consume the same approved outputs and must not reimplement formulas.
+Every result returns `whole_member_status=not-checked` and `engineering_approval=false`. Component PASS does not certify a complete member. Independent engineering review, built-up/glulam/SCL, manufacturer catalogs, connections, broader analysis and formal reports remain incomplete. CSA O86 is not implemented; NDS results must not be described as Canadian-code design.
 
 ## Development
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
-pytest
+pip install -e '.[dev]'
+pytest -q
 uvicorn wooddessign.api.app:app --reload
-b``
+```
 
-## Available API
+## API
 
-- `GET /health`
-- `GET /version`
-- `POST /api/v1/calculate` — fails closed with HTTP 503 until a validated engineering engine is integrated.
+- `GET /health`, `GET /version`: public service/readiness metadata.
+- `POST /api/v1/nds2024/member-check`: scoped component checks.
+- `POST /api/v1/nds2024/simple-beam`: simple-span UDL analysis and beam component checks.
+- `POST /api/v1/calculate`: complete design remains unavailable (503 for authorized callers).
 
-## Safety
+All `/api/` requests require a user Bearer JWT. The server calls Linkoteq's canonical execution authority with `tool=wood_design`; unauthenticated requests are 401, missing access is 403, and unavailable authorization fails closed. UI state is not an authorization mechanism. Do not set an environment switch to bypass authentication.
 
-WoodDessign is an engineering calculation aid. Unsupported or unvalidated design conditions must fail closed. No code-compliance claim is made for calculation modules until the governing source, implementation, and benchmark validation are approved.
+The geometry/action examples are synthetic test fixtures, not approved lumber catalog values. They can be evaluated directly with the same Python engine or sent to the protected API by a user with approved access. Source assumptions and factors must be replaced with project-specific evidence.
 
-## Structural Core v0.6 coordination
+## Validation and provenance
 
-- Canonical source: [`dehghoon/linkoteq-structural-core`](https://github.com/dehghoon/linkoteq-structural-core/blob/main/CORE_CONTRACT.md).
-- Target package: `v0.6.0`; target structural model schema: `0.6`.
-- Core retains backward compatibility with schema `0.5`.
-- This is a coordination target only; it does not certify runtime migration, dependency updates, solver support, or deployment.
-- Core `v0.6.0` GitHub Release publication is tracked separately.
-- Existing engineering calculations, detection evidence, and application behavior are unchanged by this documentation-only update.
+`docs/source_register.md` records the approved equation-level v2 handoff and the inaccessible upstream implementation. `docs/implementation_matrix.md` states the remaining scope. The test suite covers hand arithmetic benchmarks, stability/axis regressions, strict invalid inputs, unrounded overcapacity, and direct API authorization.

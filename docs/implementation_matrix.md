@@ -11,4 +11,5 @@
 | Built-up, glulam and SCL design | Not implemented | No passing design output |
 | Material catalog / product selection | Not implemented | No silent fallback to generic material |
 | CSA O86 | Not implemented, independent Canadian profile required | NDS substitution rejected |
+| Protected component-check API and simple-beam Beta interface | Implemented, separate from complete design | Anonymous/invalid authorization denied; scoped server policy |
 | Complete design API and formal reports | Unavailable | Existing fail-closed tests |

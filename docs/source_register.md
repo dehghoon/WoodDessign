@@ -16,4 +16,4 @@ These checks do not verify the provenance/applicability of externally entered ma
 
 Built-up fastening/detailing and the individual-lamination capacity-floor comparison; glulam/SCL/product-specific factor interactions; authorized built-in product catalog; broader analysis supports/loads; connections; complete member verification; formal reports; and CSA O86. No NDS equation is represented as CSA O86.
 
-The API's original complete-design route remains unavailable. The new component-check kernels are internal Python functions only; no new public API execution endpoint is exposed. A protected Beta interface and independent engineering review remain to be completed.
+The API's original complete-design route remains unavailable. The new component-check endpoints are protected by canonical tool-scoped authorization. A limited Beta interface consumes the simple-span UDL workflow. Independent engineering review and the wider design scope remain incomplete.
