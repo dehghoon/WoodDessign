@@ -1,0 +1,629 @@
+<PARSED TEXT FOR PAGE: 1 / 9>
+WoodDessign | NDS 2024 Engineering Calculation Specification — APPROVED Equation-Level v2
+GPT-1 → GPT-2 | Equation-Level | NDS 2024 + applicable AWC errata through March 2026
+01_Wood Engineering Calculation Specification — APPROVED
+WoodDessign | GPT-1 Engineering Specification Agent
+Approval basis date: 2026-08-25 | Status: USER-APPROVED SOURCE BASIS
+1. Document Control
+Field Approved requirement
+Project WoodDessign
+Specification Wood Engineering Calculation Specification
+Status APPROVED — user-approved engineering source basis; 
+implementation verification remains mandatory
+Governing U.S. wood design basis NDS 2024, as explicitly approved by the user for the audited 
+source functionality
+Open-source reuse basis CivilPy repository, pinned audit commit 
+637ac23218bab70f9b1dc04310a4c5d9d238bb04
+Open-source audit 04_PyNDS_Open_Source_Audit_and_ReUse_Matrix_APPR
+OVED.docx
+Report requirements Calculation_Report_Guideline_FINAL_v2.docx
+Canadian design CSA O86/NBCC logic shall remain independent; no 
+automatic NDS-to-CSA conversion
+2. Calculation Overview
+WoodDessign shall provide structural analysis and wood-member design through a clean design-standard interface. The NDS 
+engine shall maximize reuse of verified/applicable open-source functionality identified in the approved reuse matrix. GPT-2 shall 
+not recreate reusable functionality without a documented reason.
+The calculation layer shall remain separate from product/material data, product selection, reporting, entitlement, and 
+application/UI concerns.
+3. Approved Source and Reuse Policy
+The user explicitly approves the NDS 2024 source basis, source-stated NDS mappings, and material/reference-strength data 
+contained in the audited open-source source for this project. GPT-2 may therefore rely on those approved source/data items 
+without repeating the repository discovery exercise.
+This approval does not override software defects, approximations, silent fallbacks, hard-coded assumptions, or scope 
+incompatibilities identified by GPT-1. Reuse classifications in the approved PyNDS/Open-Source Audit remain controlling: A = 
+reuse unchanged; B = reuse through adapter/wrapper; C = reuse after correction; D = reference implementation only; E = reject.
+4. Required Calculation Scope
+Capability Requirement
+Structural analysis Geometry, supports, spans/cantilevers where specified, load 
+cases/combinations, reactions, V/M/axial demand, deflection 
+and governing extrema.
+Sawn/dimensional lumber Bending, shear, compression parallel, bearing/compression 
+perpendicular, tension where applicable, stability and 
+serviceability.
+Glulam Same applicable member checks using approved 
+product/reference properties and applicable factors.
+Built-up lumber Required gap; GPT-2 shall implement only from an equation￾level GPT-1 specification.
+SCL: LVL/PSL/LSL Product-data-driven design when authorized properties are 
+available.
+I-joists Manufacturer-data-driven only when authorized source data 
+<PARSED TEXT FOR PAGE: 2 / 9>
+WoodDessign | NDS 2024 Engineering Calculation Specification — APPROVED Equation-Level v2
+GPT-1 → GPT-2 | Equation-Level | NDS 2024 + applicable AWC errata through March 2026
+are available.
+Connections Separate verified module; current approximate open-source 
+connection routines are not production-approved.
+CSA O86/NBCC Separate independent Canadian engine.
+5. NDS Design Checks and Factor Architecture
+Bending/flexural resistance
+Shear resistance
+Compression parallel to grain
+Compression perpendicular to grain / bearing
+Tension parallel to grain where applicable
+Beam stability / lateral support
+Column slenderness and stability
+Combined axial compression + bending interaction
+Serviceability: live-load and total-load deflection
+Applicable load-duration/time-effect, moisture, temperature, size/volume, flat-use, incising/treatment, repetitive-member/system 
+and stability factors
+Each check shall retain unrounded intermediate values, demand, resistance/capacity, utilization, governing condition, 
+PASS/FAIL, warnings, factor applicability and traceability. Display rounding shall never control engineering decisions.
+6. Mandatory Corrections Before Production Verification
+ID Area GPT-2 requirement
+NDS-COR-01 Beam stability Correct CL chain so Fb* and E'min are 
+assembled from the required applicable
+adjusted properties; do not retain the 
+audited approximation.
+NDS-COR-02 Column stability Compute stability about each applicable
+axis using the correct axis dimension 
+and adjusted properties; select the 
+governing capacity.
+NDS-COR-03 Combined compression + bending Remove artificial denominator 
+clamping; instability/invalid denominator
+shall fail closed and be reported 
+explicitly.
+NDS-COR-04 Validation defaults Unknown load type, size class, load￾duration category or unsupported 
+lookup shall not silently default to an 
+engineering value.
+NDS-COR-05 Material model Remove hidden generic 
+density/specific-gravity/material￾strength assumptions where 
+project/product data are required.
+NDS-COR-06 Connections Do not reuse approximate 
+Cg/C_delta/hard-coded steel/fastener 
+material logic as production 
+calculations.
+<PARSED TEXT FOR PAGE: 3 / 9>
+WoodDessign | NDS 2024 Engineering Calculation Specification — APPROVED Equation-Level v2
+GPT-1 → GPT-2 | Equation-Level | NDS 2024 + applicable AWC errata through March 2026
+7. Input Schema Requirements
+Inputs shall be typed, unit-aware and validated. Minimum groups: Project; design standard/edition/unit system; Member; 
+material/product; geometry; support conditions; unbraced/effective lengths; service condition; treatment/incising; load cases; 
+load locations/distributions; load combinations; serviceability limits; and product-selection constraints where applicable.
+Material/product records shall carry provenance fields including category, manufacturer where applicable, designation, 
+species/material class, grade/stress class, dimensions, section properties, strength/stiffness values, density, design 
+standard/edition/method, source document/table/page/date, units and verification status.
+8. Calculation Workflow
+1. Validate design standard, edition, units and calculation applicability.
+2. Validate geometry, material/product record and required service-condition inputs.
+3. Generate/receive structural demands from the analysis engine.
+4. Retrieve approved reference properties.
+5. Determine applicable adjustment/modification factors independently for each design property.
+6. Calculate adjusted design properties.
+7. Perform strength/stability/serviceability checks.
+8. Retain all intermediate values required for engineering review.
+9. Determine governing utilization and controlling load combination/condition.
+10. Return structured results, PASS/FAIL, warnings, limitations and traceability.
+11. Where product selection is requested, reject any candidate failing any mandatory check and rank only compatible passing 
+candidates by the approved objective.
+9. Decision Logic and Safety Requirements
+Unsupported conditions shall fail closed. No exception handler, lookup fallback or UI default may convert an unsupported 
+engineering case into an apparently valid result. Strength and serviceability checks remain separate. NDS and CSA O86 
+calculations remain separate. Candidates from incompatible standards, editions or design methods shall not be compared.
+10. Output Register Requirements
+Outputs shall include analysis demands, reference properties, every applied adjustment factor, adjusted properties, intermediate
+stability/slenderness values, resistances/capacities, deflections and limits, demand/capacity or utilization ratios, governing case, 
+PASS/FAIL, warnings, invalid-input messages, limitations and source/formula/test identifiers.
+11. Validation Cases and Acceptance
+B-NDS-01 Sawn lumber bending — independent benchmark
+B-NDS-02 Beam stability — verify Fb*, E'min, RB, FbE and CL
+B-NDS-03 Column strong-axis stability
+B-NDS-04 Weak-axis governing regression case
+B-NDS-05 Combined compression + bending, including instability boundary
+<PARSED TEXT FOR PAGE: 4 / 9>
+WoodDessign | NDS 2024 Engineering Calculation Specification — APPROVED Equation-Level v2
+GPT-1 → GPT-2 | Equation-Level | NDS 2024 + applicable AWC errata through March 2026
+B-NDS-06 Bearing/compression perpendicular
+B-NDS-07 Shear
+B-NDS-08 Simple-span UDL deflection
+B-NDS-09 LRFD factor chain when LRFD mode is included
+B-ERR-01 Unsupported-input fail-closed behavior
+At least one benchmark for every implemented engineering check shall be independent of the reused open-source 
+implementation. Benchmarks shall verify important intermediate factors, not only final utilization.
+12. Calculation Report Specification Linkage
+Engineering calculations and safety-critical on-screen results remain available independent of report entitlement. The formal 
+report shall follow Calculation_Report_Guideline_FINAL_v2.docx and preserve Source → Calculation Step → Formula ID → 
+Code Reference → Output → Validation Test → Report Section traceability. Subscription controls apply only to formal report 
+generation/download, never to engineering warnings or results.
+13. Structural Calculation Engineer Handoff
+Handoff field Approved instruction
+Approved source basis NDS 2024 and approved material/reference data as 
+confirmed by the user.
+Open-source pin CivilPy @ 637ac23218bab70f9b1dc04310a4c5d9d238bb04.
+Reuse authority Use 
+04_PyNDS_Open_Source_Audit_and_ReUse_Matrix_APPR
+OVED.docx as the controlling file/function reuse matrix.
+GitHub re-review Not required merely to start implementation; use the pinned 
+source and audit. Re-open only if an unresolved 
+implementation issue requires it.
+Implementation rule Reuse A/B; correct C; do not directly reuse D/E; implement 
+documented gaps only.
+Architecture Structural Analysis Engine; Design Standard Interface; NDS 
+Engine; independent CSA O86 Engine; Product/Material 
+Database; Product Selection Engine; Reporting Engine.
+Units Central unit-conversion layer; no silent conversions.
+Tests Unit tests per equation/factor, independent benchmarks, 
+regression tests and fail-closed validation tests.
+Traceability Source → calculation step/formula ID → governing reference
+→ GPT-2 function → output → benchmark → report field.
+Reporting Preserve all engineering results/warnings; use 
+implementation-neutral report payload.
+Production acceptance No module is production-verified until mandatory corrections 
+and benchmark tests pass.
+14. Approval Statement
+USER APPROVAL RECORDED: The user has explicitly approved the NDS 2024 source basis and the material/reference￾strength data represented in the audited source for WoodDessign. This specification is therefore approved as the engineering 
+source-basis handoff to GPT-2, subject to the explicitly documented software corrections, tests, scope limitations and fail-closed
+requirements above.
+15. Equation-Level Formula Register — NDS 2024
+Status: COMPLETE FOR THE APPROVED NDS MEMBER-DESIGN SCOPE. No engineering HOLD items remain in this 
+specification. Where a capability is not supported by the verified source basis, it is explicitly bounded as OUT OF SCOPE rather 
+than left unresolved. All internal calculations shall retain unrounded values.
+<PARSED TEXT FOR PAGE: 5 / 9>
+WoodDessign | NDS 2024 Engineering Calculation Specification — APPROVED Equation-Level v2
+GPT-1 → GPT-2 | Equation-Level | NDS 2024 + applicable AWC errata through March 2026
+Formula ID Purpose Equation Inputs / units Output Reference Acceptance / 
+notes
+NDS-F-001 Rectangular 
+section area
+A = b d b,d [in] A [in^2] Engineering 
+mechanics / 
+CivilPy section 
+model
+NDS-F-002 Strong-axis 
+section 
+modulus
+Sx = b d^2 / 6 b,d [in] Sx [in^3] Engineering 
+mechanics / 
+CivilPy
+NDS-F-003 Strong-axis 
+inertia
+Ix = b d^3 / 12 b,d [in] Ix [in^4] Engineering 
+mechanics / 
+CivilPy
+NDS-F-004 Weak-axis 
+section 
+modulus
+Sy = d b^2 / 6 b,d [in] Sy [in^3] Engineering 
+mechanics / 
+CivilPy
+NDS-F-005 Weak-axis 
+inertia
+Iy = d b^3 / 12 b,d [in] Iy [in^4] Engineering 
+mechanics / 
+CivilPy
+NDS-F-010 Bending stress fb = M / S M [lbf-in], S 
+[in^3]
+fb [psi] NDS Ch.3 
+flexure; CivilPy 
+check_bending
+NDS-F-011 Bending 
+utilization
+UR_b = fb / Fb' fb,Fb' [psi] dimensionless PASS if UR_b 
+<= 1.0
+NDS-F-020 Rectangular 
+shear stress
+fv = 1.5 V / A V [lbf], A [in^2] fv [psi] NDS 3.4.2 / 
+CivilPy
+NDS-F-021 Shear 
+utilization
+UR_v = fv / Fv' fv,Fv' [psi] dimensionless PASS if UR_v 
+<= 1.0
+NDS-F-030 Axial 
+compression 
+stress
+fc = P / A P [lbf], A [in^2] fc [psi] NDS Ch.3 / 
+CivilPy
+NDS-F-031 Effective 
+column length
+le = Ke L Ke [-], L [in] le [in] NDS 3.7.1.2 / 
+Appendix G
+NDS-F-032 Column 
+slenderness
+lambda_c = le /
+d_axis
+le,d_axis [in] dimensionless NDS 3.7.1.3
+NDS-F-033 Euler-type 
+critical 
+compression 
+value
+FcE = 0.822 
+Emin' / 
+(le/d_axis)^2
+Emin' [psi] FcE [psi] NDS 3.7.1.5
+NDS-F-034 Column 
+stability factor
+Cp = a - 
+sqrt(a^2 - 
+(FcE/Fc*)/c), 
+a=(1+FcE/Fc*)/
+(2c)
+FcE,Fc* [psi] Cp [-] NDS Eq. 3.7-1
+NDS-F-035 Adjusted 
+compression 
+value
+Fc' = Fc* Cp Fc* [psi] Fc' [psi] NDS 2.3 + 3.7
+NDS-F-036 Compression 
+utilization
+UR_c = fc / Fc' fc,Fc' [psi] dimensionless PASS if <=1.0
+NDS-F-040 Tension stress ft = T / An T [lbf], An 
+[in^2]
+ft [psi] NDS 3.8; net 
+section 
+required
+NDS-F-041 Tension 
+utilization
+UR_t = ft / Ft' ft,Ft' [psi] dimensionless PASS if <=1.0
+NDS-F-050 Bearing stress 
+perpendicular 
+to grain
+fc_perp = R / 
+Ab_net
+R [lbf], Ab 
+[in^2]
+psi NDS 3.10.2
+NDS-F-051 Bearing area 
+factor
+Cb = (lb + 
+0.375) / lb
+lb [in] Cb [-] NDS Eq. 3.10-
+2; only when 
+applicability 
+conditions are 
+met
+NDS-F-052 Bearing 
+utilization
+UR_brg = 
+fc_perp / 
+Fc_perp'
+psi/psi dimensionless PASS if <=1.0
+NDS-F-060 Beam 
+slenderness 
+RB = sqrt(le d /
+b^2)
+le,d,b [in] dimensionless NDS Eq. 3.3-5
+<PARSED TEXT FOR PAGE: 6 / 9>
+WoodDessign | NDS 2024 Engineering Calculation Specification — APPROVED Equation-Level v2
+GPT-1 → GPT-2 | Equation-Level | NDS 2024 + applicable AWC errata through March 2026
+ratio
+NDS-F-061 Beam buckling 
+design value
+FbE = 1.20 
+Emin' / RB^2
+Emin' [psi] FbE [psi] NDS 3.3.3.8
+NDS-F-062 Beam stability 
+factor
+CL = a - 
+sqrt(a^2 - 
+(FbE/Fb*)/0.95)
+, 
+a=(1+FbE/Fb*)/
+1.9
+FbE,Fb* [psi] CL [-] NDS Eq. 3.3-6
+NDS-F-063 Beam stability 
+adjusted 
+bending
+Fb' = Fb* CL, 
+subject to 
+product￾specific CV/CL 
+interaction
+psi psi NDS 3.3.3 + 
+product 
+chapter
+NDS-F-070 Simple-span 
+UDL deflection
+delta = 5 w L^4
+/ (384 E' I)
+w [lbf/in], L [in],
+E' [psi], I [in^4]
+delta [in] Engineering 
+mechanics; 
+CivilPy
+NDS-F-071 Deflection 
+utilization
+UR_delta = |
+delta| / 
+delta_allow
+in/in dimensionless PASS if <=1.0
+NDS-F-080 Combined 
+tension + 
+bending #1
+UR = ft/Ft' + 
+fb/Fb*
+psi dimensionless NDS Eq. 3.9-1;
+PASS <=1.0
+NDS-F-081 Combined 
+tension + 
+bending #2
+UR = (fb - 
+ft)/Fb**
+psi dimensionless NDS Eq. 3.9-2;
+PASS <=1.0
+NDS-F-090 Combined 
+compression + 
+biaxial bending
+UR = (fc/Fc')^2 
++ fb1/[Fb1'(1-
+fc/FcE1)] + 
+fb2/[Fb2'(1-fc/F
+cE2-(fb1/FbE)^
+2)]
+psi dimensionless NDS Eq. 3.9-3;
+PASS <=1.0
+NDS-F-091 Combined 
+stability 
+auxiliary check
+UR_aux = 
+fc/FcE2 + 
+(fb1/FbE)^2
+psi dimensionless NDS Eq. 3.9-4;
+must be <1.0 
+where 
+applicable
+NDS-F-092 Combined 
+denominator 
+validity
+D1=1-fc/FcE1; 
+D2=1-fc/FcE2-
+(fb1/FbE)^2
+dimensionless dimensionless If D1<=0 or 
+D2<=0: FAIL; 
+no numerical 
+clamping
+NDS-F-100 Built-up column
+slenderness 
+axis 1
+lambda_1 = 
+le1/d1
+in/in dimensionless NDS 15.3.2
+NDS-F-101 Built-up column
+slenderness 
+axis 2
+lambda_2 = 
+le2/d2
+in/in dimensionless NDS 15.3.2
+NDS-F-102 Built-up column
+stability
+Cp_i = Kf_i [a_i
+- sqrt(a_i^2 - 
+(FcE_i/Fc*)/c)],
+a_i=(1+FcE_i/F
+c*)/(2c)
+psi dimensionless NDS Eq. 15.3-
+1
+NDS-F-103 Built-up 
+governing Cp
+Cp = 
+min(Cp_1, 
+Cp_2)
+dimensionless dimensionless NDS 15.3.2.2
+16. Adjustment-Factor Register and Numeric Rules
+Factor Purpose Numeric rule Reference Implementation rule
+CD ASD load duration permanent 0.90; 
+normal 1.00; 2-month 
+1.15; 7-day 1.25; 10-
+min 1.60; impact 2.00
+NDS Table 2.3.2 / 
+CivilPy
+Apply only to 
+properties permitted 
+by NDS product 
+chapter.
+Ci Incising Fb 0.80; Ft 0.80; Fv 
+0.80; Fc_perp 1.00; Fc
+0.80; E 0.95; Emin 
+NDS Table 4.3.8 / 
+CivilPy
+Only for qualifying 
+incised dimension 
+lumber.
+<PARSED TEXT FOR PAGE: 7 / 9>
+WoodDessign | NDS 2024 Engineering Calculation Specification — APPROVED Equation-Level v2
+GPT-1 → GPT-2 | Equation-Level | NDS 2024 + applicable AWC errata through March 2026
+0.95
+Cr Repetitive member 1.15 when all NDS 
+eligibility conditions 
+are satisfied; 
+otherwise 1.00
+NDS sawn-lumber 
+adjustment provisions
+Eligibility shall be 
+explicit, not a free 
+boolean override.
+KF LRFD format 
+conversion
+Fb 2.54; Ft 2.70; Fv 
+2.88; Fc_perp 1.67; Fc
+2.40; Emin 1.76
+NDS Table 2.3.5 / 
+source implementation
+No ASD use.
+phi LRFD resistance 
+factor
+Fb 0.85; Ft 0.80; Fv 
+0.75; Fc_perp 0.90; Fc
+0.90; Emin 0.85
+NDS LRFD table / 
+CivilPy
+No ASD use.
+lambda LRFD time effect permanent 0.60; 
+normal/2-month/7-day 
+0.80; 10-min/impact 
+1.00
+NDS LRFD time-effect
+table / CivilPy
+Unknown category = 
+validation error.
+Kf built-up Mechanically 
+laminated built-up 
+columns
+0.60 for nailed weak￾axis case; 0.75 for 
+bolted weak-axis case;
+1.00 for axis-1 case
+NDS 15.3.2.4 Only when fastening 
+complies with 15.3.3 
+or 15.3.4.
+c column Column stability 
+coefficient
+0.80 sawn lumber; 
+0.90 glulam/SCL/CLT
+NDS 3.7.1.5 / 15.3.2.4 Round timber 0.85 if 
+later added.
+Cb Bearing area (lb+0.375)/lb for 
+qualifying interior 
+bearings <6 in and 
+>=3 in from end; 
+otherwise 1.0
+NDS 3.10.4 No clamping of lb to 
+0.5; validate 
+applicability explicitly.
+Cvr glulam 2024 shear reduction 0.72 where required 
+for non-prismatic, 
+impact/repetitive 
+cyclic, notch, or 
+connection conditions
+2024 NDS 5.3.10 with 
+March 2026 errata
+Must use corrected 
+clause references 
+from latest errata.
+17. Built-Up Lumber — Complete Production Scope
+WoodDessign v1 built-up lumber functionality SHALL include mechanically laminated built-up columns under NDS 2024 Section 
+15.3. This resolves the previous non-equation-level limitation.
+Requirement Equation-level rule
+Geometry All laminations full column length; adjacent faces in contact; 
+use assembled d1/d2 geometry and weakest-lamination Fc' / 
+Emin' basis as required.
+Effective lengths Compute le1=Ke1 L1 and le2=Ke2 L2; evaluate both le1/d1 
+and le2/d2.
+Slenderness limit Each production slenderness ratio shall be <=50. 
+Construction-only allowance up to 75 shall not be used for 
+permanent design acceptance.
+Critical buckling FcE_i = 0.822 Emin'_i / (le_i/d_i)^2.
+Stability Use NDS-F-102 for each axis and NDS-F-103 for governing 
+Cp.
+Nailed Kf Kf=0.60 for the le2/d2 case when nailed per NDS 15.3.3; 
+Kf=1.00 for le1/d1.
+Bolted Kf Kf=0.75 for the le2/d2 case when bolted per NDS 15.3.4; 
+Kf=1.00 for le1/d1.
+Nailed detailing validation Alternate driving sides; penetration through laminations with 
+required outer-lamination penetration; validate NDS 15.3.3 
+spacing/end/edge-distance limits as explicit input constraints.
+Bolted detailing validation Require washers/plates, face contact, and validate NDS 
+15.3.4 end-distance/spacing/edge-distance limits as explicit 
+input constraints.
+Capacity floor rule Built-up Fc' need not be less than the capacity obtained by 
+designing the individual laminations as individual solid 
+columns; compute both and use the permitted governing 
+result.
+Output Return Cp1, Cp2, FcE1, FcE2, lambda1, lambda2, Kf1, Kf2, 
+<PARSED TEXT FOR PAGE: 8 / 9>
+WoodDessign | NDS 2024 Engineering Calculation Specification — APPROVED Equation-Level v2
+GPT-1 → GPT-2 | Equation-Level | NDS 2024 + applicable AWC errata through March 2026
+assembled Fc', individual-lamination comparison, governing 
+axis and utilization.
+18. Multi-Ply Beam Scope — Closed Decision, No HOLD
+A side-by-side multi-ply beam shall NOT be assumed to act as a fully composite monolithic section solely because the plies are 
+fastened together. For WoodDessign v1, each ply is designed using the load actually assigned to that ply. Total member 
+capacity may be assembled only from the sum of individually verified ply capacities under a load-distribution model that does not
+rely on unverified composite stiffness. Where the application requires load transfer among plies, the multi-ply connection shall 
+be checked under the 2024 NDS connection provisions. This is an explicit production scope rule, not a HOLD item.
+19. Corrected PyNDS/CivilPy Reuse Mapping for GPT-2
+CivilPy function/module Final class GPT-2 action
+check_bending B — ADAPT Reuse fb=M/S and result architecture; 
+replace rounded internal ratio with full 
+precision.
+check_shear B/C — ADAPT + 2024 update Reuse 1.5V/A for prismatic rectangular 
+members; add 2024 shear applicability 
+and Cvr/errata logic where applicable.
+check_compression C — CORRECT Compute Cp independently for both 
+axes using correct d_axis and adjusted 
+Emin'/Fc*; do not pass only a governing
+length.
+check_bearing C — CORRECT Reuse stress equation; remove lb 
+clamping; implement exact Cb 
+applicability.
+check_tension B — ADAPT Use net area An, not necessarily gross 
+A; connection deductions handled by 
+section/net-area model.
+check_deflection B — ADAPT Reuse simple-span UDL closed form; 
+strict support/load-case identifier 
+required.
+beam_stability_factor B — ADAPT Reuse algebra kernel only with correctly
+assembled Fb* and Emin'.
+AdjustmentFactors.CL C — REPLACE CALL PATH Do not use source approximation based
+on reference Fb; route to verified 
+beam_stability_factor with adjusted 
+properties.
+AdjustmentFactors.Cp C — REPLACE CALL PATH Pass axis explicitly and use adjusted 
+Emin' and Fc*.
+check_combined_bending_compressio
+n
+C — REPLACE Implement full NDS-F-090/NDS-F-091; 
+remove denominator=0.001 behavior.
+Built-up columns NEW WOODDESSIGN Implement NDS-F-100 through NDS￾F-103 plus fastening/detail validation.
+BoltConnection approximate 
+group/geometry factors
+E — REJECT Do not use approximate source routines
+for production multi-ply connection 
+design.
+20. Invalid-Input and Fail-Closed Rules
+• RB > 50: invalid member for NDS beam-stability procedure; return FAIL/INVALID, never extrapolate.
+• le/d > 50 for permanent column design: FAIL/INVALID.
+• D1 <= 0 or D2 <= 0 in combined compression-bending: FAIL due to instability/overstress; never clamp denominator.
+• Unknown load-duration, LRFD time-effect, load-type, factor applicability, size class or product record: validation error.
+• Bearing Cb shall not be applied outside its stated location/length applicability.
+<PARSED TEXT FOR PAGE: 9 / 9>
+WoodDessign | NDS 2024 Engineering Calculation Specification — APPROVED Equation-Level v2
+GPT-1 → GPT-2 | Equation-Level | NDS 2024 + applicable AWC errata through March 2026
+• Unverified composite action between built-up beam plies shall not be assumed.
+• NDS logic shall never be used as CSA O86 resistance logic.
+• Values from different NDS editions shall never be mixed. 2024 provisions use 2024 Supplement data and applicable 
+errata/addenda.
+21. Source and Errata Control
+Source Use Control
+ANSI/AWC NDS-2024 Primary design standard; ANSI 
+approval October 16, 2023; referenced 
+by 2024 IBC.
+AWC 2024 NDS resource page
+2024 NDS Supplement Design values integral with NDS 
+provisions; edition mixing prohibited.
+AWC 2024 NDS Supplement resource 
+page
+2024 NDS Errata/Addenda — March 
+2026
+Apply latest corrected references and 
+shear/glulam provisions, including 
+Cvr=0.72 applicability text where stated.
+AWC official errata
+CivilPy pinned source 637ac23218bab70f9b1dc04310a4c5d9
+d238bb04
+Implementation reuse reference only; 
+corrected by this specification where 
+noted.
+22. GPT-2 Definition of Done — No Additional Reverse Engineering Required
+GPT-2 may implement the approved NDS scope directly from this specification together with 
+04_PyNDS_Open_Source_Audit_and_ReUse_Matrix_APPROVED.docx and the pinned CivilPy source. GPT-2 shall not invent 
+formulas and does not need to perform a new GitHub reverse-engineering exercise. Completion requires implementation of 
+every Formula ID applicable to the selected member/product, the correction rules above, unit tests, independent benchmark 
+tests, regression tests for the identified CivilPy defects, and full source-to-test traceability.
+There are no OPEN/HOLD engineering items in the approved NDS v1 member-design scope. Features outside the stated scope
+(for example assumed full-composite multi-ply beam action without a verified connection model, or CSA O86 equations) are 
+explicit scope boundaries.
