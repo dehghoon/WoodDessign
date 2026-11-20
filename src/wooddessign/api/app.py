@@ -11,11 +11,11 @@ from wooddessign.models.calculation import CalculationRequest, CalculationUnavai
 app = FastAPI(
     title="WoodDessign API",
     version=__version__,
-    description="API shell for the validated WoodDessign engineering engine.",
+    description="Wood design development API. Design calculations are not yet available.",
 )
 
 
-@app.get("h/health".replace("h", ""), tags=["system"])
+@app.get("/health", tags=["system"])
 def health() -> dict[str, str]:
     return {"status": "ok"}
 
