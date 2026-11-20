@@ -14,10 +14,11 @@ def test_health() -> None:
 def test_version_declares_engine_not_integrated() -> None:
     response = client.get("/version")
     assert response.status_code == 200
-    assert response.json()["engineering_engine"] == "not-integrated"
+    assert response.json()["complete_design_engine"] == "not-integrated"
 
 
-def test_calculation_fails_closed_without_validated_engine() -> None:
+def test_calculation_fails_closed_without_validated_engine(monkeypatch) -> None:
+    monkeypatch.setattr("wooddessign.api.tool_auth.verify_access", lambda _: (200, "test-verified"))
     response = client.post(
         "/api/v1/calculate",
         json={

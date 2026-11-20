@@ -1,42 +1,19 @@
-# Source Register
+# Wood design source register — 2026-11-20
 
-## Purpose
+The prior repository scaffold did not include the subsequently approved engineering handoff. That older missing-source assessment is superseded for the NDS component scope by:
 
-This register records the sources that are currently authorized to govern the WoodDessign implementation. It distinguishes architecture/process guidance from engineering calculation authority.
+- `01_Wood_Engineering_Calculation_Specification_APPROVED_Equation_Level_v2(1).docx`, approved 2026-08-25, NDS 2024 plus applicable errata through March 2026. The current text was read in full; its equation register is retained in `approved-nds-2024-specification.txt`.
+- `04_PyNDS_Open_Source_Audit_and_ReUse_Matrix_APPROVED(1).docx`, approved source basis. The later equation-level v2 register controls corrections and supersedes earlier source-confirmation holds.
+- The audit pins CivilPy at `637ac23218bab70f9b1dc04310a4c5d9d238bb04`. Direct retrieval of that repository failed with an authentication/access error on this implementation run. Consequently no upstream implementation or material CSV was copied. The corrected kernels are implemented directly from the authorized equation-level handoff; this is the reason for not reusing unavailable upstream functions. No claim is made that CivilPy tests were run.
 
-## Supplied implementation handoff
+## Implemented boundary
 
-| Source | Edition / date | Role | Modules affected | Engineering authority |
-|---|---|---|---|---|
-| `WoodDessign_GPT3_Implementation_Instructions.docx` | Supplied 2026-08-25 | Project mission, architecture, hold points, provenance, testing, reporting, PyNDS audit requirements | Entire repository | Process/specification handoff only; it explicitly prohibits invented engineering provisions |
-| `04_GITHUB_ARCHITECTURE_GUIDELINE.md` | Current supplied copy | Repository-first GitHub workflow | Repository structure, commits | No |
-| `05_ENGINEERING_PLATFORM_GUIDELINE.md` | Current supplied copy | Shared engineering package boundary | Engine/API/client boundaries | No |
-| `06_FASTAPI_GUIDELINE.md` | Current supplied copy | FastAPI responsibilities | `src/wooddessign/api` | No |
-| `07_REACT_GUIDELINE.md` | Current supplied copy | Frontend boundary and API-only engineering consumption | Future `web/` | No |
-| `08_REACT_THREE_FIBER_GUIDELINE.md` | Current supplied copy | Visualization boundary | Future visualization | No |
-| `09_REPORT_AND_PDF_GUIDELINE.md` | Current supplied copy | Report preview/PDF authorization architecture | Future reporting | No |
-| `13_MOBILE_REUSE_GUIDELINE.md` | Current supplied copy | Mobile reuse boundary | Shared contracts/future `mobile/` | No |
-| `14_CHECKLIST.md` | Current supplied copy | Delivery gate | CI/release | No |
-| `15_CHANGELOG.md` | Version 1.0 | Platform guideline history | Documentation | No |
-| `16_OPEN_SOURCE_VISUALIZATION_GUIDELINE.md` | Current supplied copy | Visualization reuse/open-source policy | Future visualization | No |
-| `10_CISC_DATA_GUIDELINE.md` | Current supplied copy | CISC data ingestion rules | Not applicable to wood product data unless steel components enter scope | No wood-design authority |
-| `11_TESTING_AND_QA_GUIDELINE.md` | Current supplied copy | Required test layers/evidence | Tests/CI | No |
-| `12_DEPLOYMENT_GUIDELINE.md` | Current supplied copy | Portable deployment requirements | Deployment/configuration | No |
-| `Engineering_Frontend_Architecture_Guideline_FINAL_v2.docx` | Final supplied copy | Repository/domain/API/auth/report/mobile boundaries | Platform architecture | No |
-| `GPT3_GitHub_Development_Guidelines.md` | Current supplied copy | GitHub implementation workflow | Git operations | No |
+NDS 2024 rectangular, prismatic, unnotched single sawn-member component checks, with explicit engineer-supplied material values and adjustment factors. ASD/LRFD duration and format factors are computed, property-specific factors are constrained, beam stability uses adjusted properties, both column axes are evaluated, and nonpositive interaction denominators fail without clamping. Simple-span UDL serviceability is isolated from supplied strength actions.
 
-## Missing governing engineering sources
+These checks do not verify the provenance/applicability of externally entered material values or modification factors. Every result retains those sources and returns `whole_member_status=not-checked` and `engineering_approval=false`. A passing component check is not complete member design approval.
 
-No Agent #1 Engineering Calculation Specification / Handoff, approved Agent #2 calculation package, NBCC edition, CSA O86 edition, NDS edition, authorized manufacturer design-value dataset, or independent benchmark set was supplied with the current task.
+## Not completed
 
-Therefore:
+Built-up fastening/detailing and the individual-lamination capacity-floor comparison; glulam/SCL/product-specific factor interactions; authorized built-in product catalog; broader analysis supports/loads; connections; complete member verification; formal reports; and CSA O86. No NDS equation is represented as CSA O86.
 
-- no wood resistance equation is authorized for implementation;
-- no adjustment/resistance factor is authorized for implementation;
-- no load combination is authorized for implementation;
-- no material/product design value is authorized for production use;
-- no PASS/FAIL engineering result may be emitted.
-
-## Hold point
-
-**HP-01 remains OPEN.** Governing engineering code editions and validated calculation authority must be supplied before calculation modules are implemented.
+The API's original complete-design route remains unavailable. The new component-check endpoints are protected by canonical tool-scoped authorization. A limited Beta interface consumes the simple-span UDL workflow. Independent engineering review and the wider design scope remain incomplete.
