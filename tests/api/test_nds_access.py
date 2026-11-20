@@ -17,12 +17,14 @@ def test_verified_caller_must_supply_valid_engineering_inputs(monkeypatch):
 
 
 def test_verified_simple_beam_request_runs_the_same_engine(monkeypatch):
-    from test_nds2024 import fixture
+    import json
+    from pathlib import Path
+    material = json.loads((Path(__file__).resolve().parents[2] / "examples/synthetic-member-check.json").read_text())["material"]
     monkeypatch.setattr('wooddessign.api.tool_auth.verify_access',lambda _:(200,'test-verified'))
     payload=dict(method='ASD',duration='normal',span_in=120,width_in=2,depth_in=12,
         beam_effective_length_in=120,combination_udl_lbf_per_in=10,total_sls_udl_lbf_per_in=8,
         live_sls_udl_lbf_per_in=4,bearing_length_in=3,total_limit_divisor=240,live_limit_divisor=360,
-        material=fixture()['material'],engineer_confirmed_inputs_and_factors=True)
+        material=material,engineer_confirmed_inputs_and_factors=True)
     response=TestClient(app).post('/api/v1/nds2024/simple-beam',json=payload)
     assert response.status_code==200
     result=response.json()
