@@ -205,6 +205,7 @@ class MemberRequest(Model):
     depth_in: float = Field(gt=0)
     net_tension_area_in2: float = Field(gt=0)
     beam_effective_length_in: float = Field(gt=0)
+    compression_edge_continuously_braced: bool = False
     column_effective_length_x_in: float = Field(gt=0)
     column_effective_length_y_in: float = Field(gt=0)
     bearing_length_in: float = Field(gt=0)
@@ -231,6 +232,9 @@ class MemberRequest(Model):
             raise ValueError("Net bearing area exceeds available contact area")
         if self.member_type == "beam" and self.serviceability is None:
             raise ValueError("Beam serviceability inputs are required")
+        if self.compression_edge_continuously_braced and (self.member_type != "beam" or any(
+                a.compression_lbf or a.tension_lbf or a.moment_y_lbf_in for a in self.actions)):
+            raise ValueError("Continuous-bracing override currently supports uniaxial beams without axial force only")
         ids = [case.case_id for case in self.actions]
         if len(set(ids)) != len(ids):
             raise ValueError("Action case IDs must be unique")
@@ -250,6 +254,9 @@ def check_member(request: MemberRequest) -> dict:
             properties[key] = {**adjusted_property(value.reference_psi, name, value.adjustments, r.method, r.duration), "source": value.source}
     adjusted = {key: value["adjusted_psi"] for key, value in properties.items()}
     beam = beam_stability(b, d, r.beam_effective_length_in, adjusted["Fb_x"], adjusted["Emin"])
+    if r.compression_edge_continuously_braced:
+        beam = {**beam, "status":"checked", "CL":1., "Fb_adjusted_psi":adjusted["Fb_x"],
+                "bracing":"compression_edge_continuously_braced", "formula_id":"NDS-3.3.3.2"}
     axes = [column_axis(d, r.column_effective_length_x_in, adjusted["Fc"], adjusted["Emin"]),
             column_axis(b, r.column_effective_length_y_in, adjusted["Fc"], adjusted["Emin"])]
     checks = []

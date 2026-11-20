@@ -12,6 +12,7 @@ class SimpleBeamRequest(Model):
     width_in: float = Field(gt=0)
     depth_in: float = Field(gt=0)
     beam_effective_length_in: float = Field(gt=0)
+    compression_edge_continuously_braced: bool = False
     combination_udl_lbf_per_in: float = Field(ge=0)
     total_sls_udl_lbf_per_in: float = Field(ge=0)
     live_sls_udl_lbf_per_in: float = Field(ge=0)
@@ -31,6 +32,7 @@ def evaluate_simple_beam(r: SimpleBeamRequest):
         "standard":"NDS_2024", "method":r.method, "unit_system":"in_lbf_psi", "member_type":"beam",
         "width_in":r.width_in, "depth_in":r.depth_in, "net_tension_area_in2":r.width_in*r.depth_in,
         "beam_effective_length_in":r.beam_effective_length_in,
+        "compression_edge_continuously_braced":r.compression_edge_continuously_braced,
         "column_effective_length_x_in":r.span_in,"column_effective_length_y_in":r.span_in,
         "bearing_length_in":r.bearing_length_in,"bearing_net_area_in2":r.width_in*r.bearing_length_in,
         "bearing_distance_from_end_in":0.,"bearing_is_interior":False,
