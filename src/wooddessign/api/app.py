@@ -14,7 +14,7 @@ from wooddessign.models.calculation import CalculationRequest, CalculationUnavai
 app = FastAPI(
     title="WoodDessign API",
     version=__version__,
-    description="NDS 2024 component-check Beta. Complete member design is not available.",
+    description="USA NDS 2024 and limited Canadian CSA O86:24 component Beta; no complete member approval.",
 )
 
 
@@ -27,7 +27,7 @@ def health() -> dict[str, str]:
 
 @app.get("/version", tags=["system"])
 def version() -> dict[str, str]:
-    return {"version": __version__, "engineering_engine": "nds-2024-component-beta", "complete_design_engine": "not-integrated"}
+    return {"version": __version__, "engineering_engine": "country-component-pilot-2026-11-22", "complete_design_engine": "not-integrated"}
 
 
 @app.post(
@@ -63,3 +63,24 @@ def simple_beam(request: SimpleBeamRequest) -> dict:
         return evaluate_simple_beam(request)
     except (ValueError, ArithmeticError) as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+from typing import Annotated,Literal,Union
+from pydantic import Field
+from wooddessign.engineering.csa_o86_2024 import CanadianBeamRequest,evaluate_canadian_beam
+
+class UnitedStatesBeamRequest(SimpleBeamRequest):
+    country:Literal["US"]
+    standard:Literal["NDS_2024"]
+    unit_system:Literal["in_lbf_psi"]
+
+CountryBeamRequest=Annotated[Union[UnitedStatesBeamRequest,CanadianBeamRequest],Field(discriminator="country")]
+
+@app.post("/api/v1/beam/check")
+def country_beam(request:CountryBeamRequest):
+    try:
+        if isinstance(request,CanadianBeamRequest):return evaluate_canadian_beam(request)
+        original=SimpleBeamRequest.model_validate(request.model_dump(exclude={"country","standard","unit_system"}))
+        result=evaluate_simple_beam(original)
+        return {**result,"country":"US","standard":"NDS_2024","unit_system":"in_lbf_psi"}
+    except (ValueError,ArithmeticError) as e:raise HTTPException(status_code=422,detail=str(e)) from e
