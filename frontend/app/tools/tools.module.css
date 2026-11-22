@@ -1,0 +1,165 @@
+.shell {
+  max-width: 1150px;
+  min-height: 70vh;
+  margin: 0 auto;
+  padding: clamp(30px, 6vw, 80px) clamp(18px, 4vw, 40px);
+}
+
+.back {
+  color: var(--ink);
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+.previewLayout {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: clamp(24px, 6vw, 68px);
+  align-items: center;
+  margin-top: 30px;
+}
+
+.intro h1 {
+  margin: .3em 0 .2em;
+  font-size: clamp(2.2rem, 5.5vw, 4.25rem);
+  line-height: 1.07;
+  letter-spacing: -.045em;
+}
+
+.intro p {
+  margin: 14px 0 20px;
+  max-width: 52ch;
+  line-height: 1.55;
+}
+
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 5px 11px;
+  color: var(--ink-soft);
+  background: var(--sage);
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.example, .model, .card {
+  padding: clamp(18px, 3.5vw, 32px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.example { max-width: 750px; margin: 28px auto 0; }
+
+.example h2, .card h2 {
+  margin: .45em 0 .65em;
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
+}
+
+.example h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.inputs {
+  margin: 8px 0 14px;
+}
+
+.inputs > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.inputs dd, .result dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 750;
+}
+
+.inputs dd {
+  text-align: right;
+}
+
+.result {
+  margin: 0;
+  padding: 12px 15px;
+  border-radius: 10px;
+  background: var(--sage);
+}
+
+.result dd {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.note, .model figcaption {
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.5;
+}
+
+.model {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.workspaceControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  margin: 0;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: .925rem;
+  font-weight: 700;
+  list-style: none;
+}
+
+.workspaceControls li {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--sage);
+}
+
+.model img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+}
+
+.model figcaption {
+  padding: 10px 14px;
+}
+
+.warning {
+  padding: 14px 18px;
+  border: 1px solid #dec78c;
+  border-radius: 12px;
+  margin: 24px 0 0;
+  background: #fff8e7;
+  color: #614a21;
+}
+
+.catalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(245px, 100%), 1fr));
+  gap: 16px;
+  margin: 24px 0 32px;
+}
+
+.card p {
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .previewLayout { grid-template-columns: 1fr; }
+}
