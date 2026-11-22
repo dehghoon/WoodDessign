@@ -15,6 +15,8 @@ class CanadianBeamRequest(BaseModel):
     country:Literal["CA"]
     standard:Literal["CSA_O86_2024"]
     unit_system:Literal["mm_N_MPa"]
+    grade_category:Literal["visual_structural","light_framing"]="light_framing"
+    blocking_at_most_2280_mm:bool=False
     width_mm:float=Field(gt=0,le=1000)
     depth_mm:float=Field(gt=0,le=2000)
     span_mm:float=Field(gt=0,le=50000)
@@ -41,6 +43,8 @@ class CanadianBeamRequest(BaseModel):
     def geometry(self):
         if self.width_mm!=38 or self.depth_mm not in SIZE:
             raise ValueError("Canadian pilot supports 38mm visually graded framing at listed standard depths only; no size-factor extrapolation")
+        if self.depth_mm==286 and not self.blocking_at_most_2280_mm:
+            raise ValueError("286mm framing requires confirmed adequate bridging/blocking at <=2280mm")
         if self.bearing_length_mm>self.span_mm/2:raise ValueError("Bearing length is inconsistent with clear span")
         return self
 
@@ -59,7 +63,7 @@ def evaluate_canadian_beam(r:CanadianBeamRequest):
     elif r.duration=="long_term":kd=.65
     elif r.live_service_udl_kn_per_m==0:kd=.65 if r.dead_service_udl_kn_per_m else 1.
     else:kd=max(.65,1-.5*log10(r.dead_service_udl_kn_per_m/r.live_service_udl_kn_per_m)) if r.dead_service_udl_kn_per_m>r.live_service_udl_kn_per_m else 1.
-    kz=SIZE[d];area=b*d;inertia=b*d**3/12
+    kz=SIZE[d] if r.grade_category=="visual_structural" else 1.;area=b*d;inertia=b*d**3/12
     moment=r.factored_udl_kn_per_m*(L/1000)**2/8
     reaction=r.factored_udl_kn_per_m*(L/1000)/2
     mr=sawn_bending_capacity(b,d,r.fb_mpa,kd=kd,kz=kz)

@@ -7,7 +7,7 @@ from wooddessign.api.app import app
 from wooddessign.engineering.csa_o86_2024 import CanadianBeamRequest,evaluate_canadian_beam,sawn_bending_capacity
 
 def payload():
-    return dict(country='CA',standard='CSA_O86_2024',unit_system='mm_N_MPa',width_mm=38.,depth_mm=235.,span_mm=3000.,bearing_length_mm=89.,factored_udl_kn_per_m=1.,dead_service_udl_kn_per_m=.2,live_service_udl_kn_per_m=.4,sustained_live_fraction=0.,duration='standard',fb_mpa=12.,fv_mpa=1.5,fcp_mpa=5.,e_mpa=10000.,material_designation='Synthetic test material',material_source='Arithmetic fixture only; not a grade table',live_limit_divisor=360.,total_limit_divisor=240.,dry_untreated_visually_graded=True,continuously_braced_single_member=True,no_notches_holes_or_composite_action=True,engineer_confirmed_inputs_and_factors=True)
+    return dict(grade_category='visual_structural',country='CA',standard='CSA_O86_2024',unit_system='mm_N_MPa',width_mm=38.,depth_mm=235.,span_mm=3000.,bearing_length_mm=89.,factored_udl_kn_per_m=1.,dead_service_udl_kn_per_m=.2,live_service_udl_kn_per_m=.4,sustained_live_fraction=0.,duration='standard',fb_mpa=12.,fv_mpa=1.5,fcp_mpa=5.,e_mpa=10000.,material_designation='Synthetic test material',material_source='Arithmetic fixture only; not a grade table',live_limit_divisor=360.,total_limit_divisor=240.,dry_untreated_visually_graded=True,continuously_braced_single_member=True,no_notches_holes_or_composite_action=True,engineer_confirmed_inputs_and_factors=True)
 
 def test_cwc2025_published_beam_example_bending_arithmetic():
     # Official additional example1 SPFNo2 38x235, KH1.4, KZ1.1.
@@ -55,3 +55,17 @@ def test_country_gateway_gated_and_both_countries_dispatch(monkeypatch):
     assert r.json()['country']=='US' and r.json()['analysis']['reaction_each_lbf']==600
     us['standard']='CSA_O86_2024'
     assert client.post('/api/v1/beam/check',json=us).status_code==422
+
+
+def test_light_framing_never_receives_structural_size_increase():
+    p=payload();p['grade_category']='light_framing'
+    r=evaluate_canadian_beam(CanadianBeamRequest(**p))
+    assert r['parameters']['KZb']==1 and r['parameters']['KZv']==1
+    p.pop('grade_category')
+    assert evaluate_canadian_beam(CanadianBeamRequest(**p))['parameters']['KZb']==1
+
+def test_deepest_framing_requires_additional_blocking_confirmation():
+    p=payload();p['depth_mm']=286.
+    with pytest.raises(ValueError,match='bridging'):CanadianBeamRequest(**p)
+    p['blocking_at_most_2280_mm']=True
+    assert CanadianBeamRequest(**p).depth_mm==286
