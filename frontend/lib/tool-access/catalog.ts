@@ -1,0 +1,1 @@
+export const BETA_WARNING = "This tool is under development and testing. Features may be incomplete or produce inaccurate results. Evaluation and feedback only; do not rely on it for professional engineering decisions.";
